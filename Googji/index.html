@@ -1,0 +1,452 @@
+<html>
+<head>
+<title>HOME</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+@media screen and (max-width: 700px) {
+#map {
+  height: 99%;
+  width:99%;
+  position:absolute;
+  top:0px;
+  left:0px;
+}
+#imap {
+  height: 99%;
+  width:99%;
+  position:absolute;
+  top:5%;
+  left:0px;
+}
+/* 
+ * Optional: Makes the sample page fill the window. 
+ */
+html,
+body {
+  height: 100%;
+  width:100%;
+  position:fixed;
+  top:0px;
+  left:0px;
+}
+
+.controls {
+  margin-top: 10px;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 32px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 400;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 95%;
+}
+
+.autocomplete-suggestions {
+  background:white;
+  margin: 5px 5px 5px 5px;
+  position: absolute;
+  width: 98%;
+  border-radius: 0px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.autocomplete-suggestions div {
+  border-bottom: 0px solid #eee;
+  cursor: pointer;
+}
+
+.autocomplete-suggestions div:hover {
+  background-color: #f0f0f0;
+}
+
+#mode-selector {
+  color: #fff;
+  background-color: #4d90fe;
+  margin-left: 12px;
+  padding: 5px 11px 0px 11px;
+}
+
+#mode-selector label {
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 300;
+}
+.dropbtn {
+  background-color: white;
+  color: black;
+  padding: 0px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  width:100%;
+  height:100%;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+  background-color: white;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width:100%;
+  height:7%;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+ width:100%;
+  font-size: 18px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content div {
+  padding: 2px 2px;display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content div:hover {background-color: #ddd;}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+.truckmenudiv{
+  margin:5px 0px 5px 0px;color:green;float:left;width:20%;background-color:#FFF2E8;margin-left:10px;border-radius:10px;
+}
+.truckmenuimg{
+  width:20%;length:20%;border-radius:25px;margin:0px 5px 0px 5px;
+}
+.downmenu{background-color:white;display: block;margin-left:auto;margin-right:auto;height:60%;width:60%;border-radius:25px;}
+.selecteddownmenu{background-color:#FFF2E8;display:block;margin-left:auto;margin-right:auto;height:65%;width:65%;border-radius:25px;}
+.selecteddownmenudiv{text-align:center;font-weight:600;}
+.downmenudiv{text-align:center;}
+.search{height:100%;width:99%;display:none;position:relative;}
+.selectedsearch{height:100%;width:99%;display:block;position:relative;}
+.sub-frame{
+		position:absolute;top:0px;left:0px;height:0%;width:0%;background-color:white;
+	}
+.opensub-frame{
+		position:absolute;top:0px;left:0px;height:99%;width:99%;background-color:white;
+	}
+.subsub-frame{
+		position:absolute;top:0px;left:0px;height:0%;width:0%;background-color:white;
+	}
+.opensubsub-frame{
+		position:absolute;top:0px;left:0px;height:99%;width:99%;background-color:white;
+	}
+}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKPlYEWXMQmqJrABi8jtZ53akP5P_RlT0&callback=initMap&libraries=places&v=weekly"></script>
+<script src="RouteBoxer.js"></script>
+<script src="newlivemap.js"></script>
+<script>
+let latitude;
+let longitude; 
+let marker;
+getLocation();
+ function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+	enableHighAccuracy: true, 
+           	 timeout: 20000, 
+            	maximumAge: 0
+       	 });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+	//cal();
+        }
+ function showPosition(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+	//window.alert(latitude);
+            document.getElementById("locationlat").value= latitude;
+            document.getElementById("locationlng").value= longitude;
+            document.getElementById("origininput").placeholder = "Source : Current Location";
+	map.setCenter({ lat: latitude, lng: longitude });
+	marker = new google.maps.Marker({
+			position : { lat: latitude, lng: longitude },
+			map: map,
+			icon: "liveicon.png",
+			title: "Current Location",
+			});
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+
+function selectlive()
+{
+	document.getElementById("live").className="selecteddownmenu";
+	document.getElementById("radar").className="downmenu";
+	document.getElementById("return").className="downmenu";
+ document.getElementById("livemenu").className="selecteddownmenudiv";
+	document.getElementById("radarmenu").className="downmenudiv";
+	document.getElementById("returnmenu").className="downmenudiv";
+	showdiv();
+}
+function selectradar()
+{
+	document.getElementById("live").className="downmenu";
+	document.getElementById("radar").className="selecteddownmenu";
+	document.getElementById("return").className="downmenu";
+document.getElementById("livemenu").className="downmenudiv";
+	document.getElementById("radarmenu").className="selecteddownmenudiv";
+	document.getElementById("returnmenu").className="downmenudiv";
+	showdiv();
+}
+function selectreturn()
+{
+	document.getElementById("live").className="downmenu";
+	document.getElementById("radar").className="downmenu";
+	document.getElementById("return").className="selecteddownmenu";
+document.getElementById("livemenu").className="downmenudiv";
+	document.getElementById("radarmenu").className="downmenudiv";
+	document.getElementById("returnmenu").className="selecteddownmenudiv";
+	showdiv();
+}
+function showdiv()
+{
+	//window.alert("hi");
+	if(document.getElementById("live").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="selectedsearch";
+		document.getElementById("radardiv").className="search";
+		document.getElementById("returndiv").className="search";
+	}
+	if(document.getElementById("radar").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="search";
+		document.getElementById("radardiv").className="selectedsearch";
+		document.getElementById("returndiv").className="search";
+	}
+	if(document.getElementById("return").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="search";
+		document.getElementById("radardiv").className="search";
+		document.getElementById("returndiv").className="selectedsearch";
+	}
+}
+function selecttruck(name)
+{
+	
+	document.getElementById("selectedtruck").innerHTML=name;
+	document.getElementById("searchlist").innerHTML ="";
+	var xhr = new XMLHttpRequest();
+                 xhr.open("GET", "selecttruck.php", true);
+                 xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById("searchlist").innerHTML = xhr.responseText;
+		//myFunction();
+		showdiv();
+		initMap();
+                }
+            };
+            xhr.send();
+}
+function first(name)
+{
+	document.getElementById("selectedtruck").innerHTML=name;
+	document.getElementById("searchlist").innerHTML ="";
+	var xhr = new XMLHttpRequest();
+                 xhr.open("GET", "selecttruck.php", true);
+                 xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById("searchlist").innerHTML = xhr.responseText;
+		showdiv();
+		initMap();
+                }
+            };
+            xhr.send();
+}
+function opensubframe(filename)
+{
+	document.getElementById("subframe").className="opensub-frame";
+	var xhr = new XMLHttpRequest();
+                 xhr.open("GET", filename, true);
+                 xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                document.getElementById("subframe").innerHTML = xhr.responseText;
+                  if(filename == "returnadd.php" )
+                  {
+		 iinitMap();
+		if(source != "" && dst != "")
+		{
+                    		document.getElementById("iorigininput").value = source;
+	  		document.getElementById("idestinationinput").value = dst;
+                    		ical();
+                    		cancle();
+		}
+                  }
+	else if(filename == "radarsearchedit.php")
+	{
+		displayradarsearch();
+		//initialize();	
+	}
+                }
+            };
+            xhr.send();
+}
+function displayhome()
+{
+if(document.getElementById("subsubframe").className!="opensubsub-frame")
+{
+	document.getElementById("subframe").innerHTML="";
+	document.getElementById("subframe").className="sub-frame";
+}
+else
+{
+	document.getElementById("subsubframe").innerHTML="";
+	document.getElementById("subsubframe").className="subsub-frame";
+}
+}
+function opensubsubframe(filename)
+{
+	document.getElementById("subsubframe").className="opensubsub-frame";
+	var xhr = new XMLHttpRequest();
+                 xhr.open("GET", filename, true);
+                 xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                document.getElementById("subsubframe").innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
+}
+function clearplace(id)
+{
+	 if(document.getElementById(id).value!="")
+	{
+		document.getElementById(id).value="";
+	}
+	cal();
+}
+ function openGoogleMaps() {
+            let source = document.getElementById('origininput').value;
+            let destination = document.getElementById('destinationinput').value;
+            let current = "{"+latitude+", "+longitude+"}";
+            let url;
+            if (destination === "") {
+                alert("Please enter both source and destination");
+                return;
+            }
+            if(source==="")
+            {
+              url = "https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(destination);
+            }
+            else
+            {
+             url = "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(source)+"&destination="+encodeURIComponent(destination);
+            }
+            window.open(url, '_blank');  // Opens in a new tab or Google Maps app on mobile
+        }
+
+window.onclick = function(event) {
+//alert("hi");
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+     if (!event.target.matches('#suggestions')) {
+		document.getElementById('suggestions').innerHTML="";
+	}
+}
+</script>
+</head>
+<body style="height:99%;width:99%;position:fixed;" onload="first('Tata Super Ace(GJ03AZ4574)');">
+<input type="hidden" id="locationlat" value="">
+<input type="hidden" id="locationlng" value="">
+<div class="dropdown">
+  <button onclick="myFunction()" class="dropbtn" id="selectedtruck">Tata Super Ace(GJ03AZ4574)</button>
+  <div id="myDropdown" class="dropdown-content">
+    <div id="t1" data-name="Tata Super Ace(GJ03AZ4574)" onClick="selecttruck(this.dataset.name)" style="width:99%;float:left;">
+      <div style="width:99%;">Tata Super Ace(GJ03AZ4574)</div>
+      <div class="truckmenudiv"><img src="Live img.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Radarimg.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Returnimg.png" class="truckmenuimg"> 10 </div>
+      
+    </div>
+    <div id="t2" data-name="Bolero(GJ03AZ7713)" onClick="selecttruck(this.dataset.name)" style="width:99%;float:left;">
+      <div style="width:99%;">Bolero(GJ03AZ7713)</div>
+      <div class="truckmenudiv"><img src="Live img.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Radarimg.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Returnimg.png" class="truckmenuimg"> 10 </div>
+      
+    </div>
+    <div id="t3" data-name="Tata 407(GJ03AZ1012)" onClick="selecttruck(this.dataset.name)" style="width:99%;float:left;">
+      <div style="width:99%;">Tata 407(GJ03AZ1012)</div>
+      <div class="truckmenudiv"><img src="Live img.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Radarimg.png" class="truckmenuimg"> 10 </div>
+      <div class="truckmenudiv"><img src="Returnimg.png" class="truckmenuimg"> 10 </div>
+      
+    </div>
+  </div>
+</div>
+<div style="height:78%;width:100%;overflow: scroll;" id="searchlist">
+
+</div>
+<table style="width:100%;border:none;">
+<tr>
+<td  style="width:26%;height:14%;"><div id="livemenu" onClick="selectlive();" class="selecteddownmenudiv"><img src="Live img.png" id="live" class="selecteddownmenu">Live</div></td>
+<td style="width:26%;height:14%;"><div id="radarmenu" onClick="selectradar();" class="downmenudiv"><img src="Radarimg.png" id="radar" class="downmenu">Radar</div></td>
+<td style="width:26%;height:14%;"><div id="returnmenu"onClick="selectreturn();" class="downmenudiv"><img src="Returnimg.png" id="return" class="downmenu">Return</div></td>
+<td style="width:21%;height:14%;"><div onClick="aiopen();opensubframe('AIdemo.php');" class="downmenudiv" ><img src="ai icon.png" class="downmenu" style="width:70%;"></div></td>
+</tr>
+</table>
+<div id="subframe" class="sub-frame"></div>
+<div id="subsubframe" class="subsub-frame"></div>
+ <div id="statedrop" style="width:98%;height:99%;position:fixed;top:5px;left:5px;display:none;background:white;overflow:auto;border:1px solid black;"></div>
+    <div id="distdrop" style=width:98%;height:99%;position:fixed;top:5px;left:5px;display:none;background:white;overflow:auto;border:1px solid black;"></div> 
+    <div id="regindrop" style=width:98%;position:fixed;top:5px;left:5px;display:none;background:white;border:1px solid black;">
+    <button id='backregion'>Back</button>Region
+    <input id="autocomplete" type="text" placeholder="Search state..." style="width:100%;" />
+    <div id="suggestions" style="width:100%;height:100px;"></div>
+    </div>
+    
+<script src="ai.js"></script>
+<script src="inputmap.js"></script>
+<script src="radar.js"></script>
+</body>
+</html>

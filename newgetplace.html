@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>State to District Autocomplete</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKPlYEWXMQmqJrABi8jtZ53akP5P_RlT0&callback=initMap&libraries=places&v=weekly"></script>
+    <script>
+      let stateBounds = null;
+
+      function initAutocomplete() {
+        const stateInput = document.getElementById("state");
+        const districtSelect = document.getElementById("district");
+
+        const stateAutocomplete = new google.maps.places.Autocomplete(stateInput, {
+          types: ["(regions)"],
+          componentRestrictions: { country: "in" },
+        });
+
+        stateAutocomplete.addListener("place_changed", () => {
+          const place = stateAutocomplete.getPlace();
+          const components = place.address_components || [];
+
+          let stateName = "";
+          components.forEach(c => {
+            if (c.types.includes("administrative_area_level_1")) {
+              stateName = c.long_name;
+            }
+          });
+
+          if (!stateName) {
+            alert("Please select a valid state.");
+            return;
+          }
+
+          // Use geocoder to find districts in the selected state
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ address: stateName + ", India" }, (results, status) => {
+            if (status === "OK" && results[0]) {
+              const location = results[0].geometry.location;
+              const bounds = results[0].geometry.viewport;
+
+              // Save bounds for restricting further geocoding
+              stateBounds = bounds;
+
+              // Call districts search here
+              findDistrictsInState(stateName);
+            } else {
+              console.error("Geocode error:", status);
+            }
+          });
+        });
+      }
+
+      function findDistrictsInState(stateName) {
+        const districtSelect = document.getElementById("district");
+        districtSelect.innerHTML = "<option>Loading...</option>";
+
+        const service = new google.maps.places.PlacesService(document.createElement("div"));
+
+        // Search for districts (administrative_area_level_2) within the state name
+        const request = {
+          query: "district in " + stateName + ", India",
+        };
+
+        service.textSearch(request, (results, status) => {
+          districtSelect.innerHTML = "";
+          if (status === "OK") {
+            const districts = results.filter(r =>
+              r.types.includes("administrative_area_level_2")
+            );
+
+            if (districts.length === 0) {
+              districtSelect.innerHTML = "<option>No districts found.</option>";
+              return;
+            }
+
+            districts.forEach(d => {
+              const option = document.createElement("option");
+              option.value = d.name;
+              option.text = d.name;
+              districtSelect.appendChild(option);
+            });
+          } else {
+            districtSelect.innerHTML = "<option>Failed to load districts.</option>";
+            console.error("TextSearch failed:", status);
+          }
+        });
+      }
+    </script>
+  </head>
+  <body onload="initAutocomplete()">
+    <h3>Select State</h3>
+    <input id="state" type="text" style="width:300px" placeholder="Type state name..." />
+
+    <h3>Select District</h3>
+    <select id="district" style="width:300px">
+      <option>Select a state first</option>
+    </select>
+  </body>
+</html>

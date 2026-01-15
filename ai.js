@@ -1,0 +1,753 @@
+  // Speech to Text
+function getNextWeekday(targetDay) {
+  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+  // Calculate days until the next targetDay
+  const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7;
+
+  const nextDate = new Date(now);  
+    nextDate.setDate(now.getDate() + daysUntilNext);   
+    return nextDate;
+}
+let word = [];
+function stringToArray(str) {
+    return str.split(' '); // Splits the string by spaces into an array
+}
+    function startListening() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'gu-IN';
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            //document.getElementById('output').innerText = event.results[0][0].transcript;
+	word = stringToArray(event.results[0][0].transcript);
+	document.getElementById('output').innerText="";
+	for(let i=0; i< word.length ; i++)
+	{
+		document.getElementById('output').innerText = document.getElementById('output').innerText+" "+word[i];
+	}
+	   intpyesno();
+        };
+	
+        recognition.onerror = (event) => {
+           // alert('Error: ' + event.error);
+        };
+	
+    }
+    
+    // Text to Speech
+    function speakText(ait) {
+        const text = ait;
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = 'gu-IN';
+        speech.onend = () => { 
+          startListening();
+          startListening(); 
+        };
+        window.speechSynthesis.speak(speech);
+    }
+let source = "";
+let dst = "";
+let date = 0;
+let month = 0;
+let year = 0;
+let hour ="";
+let status = "return";
+let reading = 0;
+let yesorno = 0;
+let yes = 0;
+let no = 0;
+let now = new Date();
+let nextdate = new Date();
+function aiopen()
+{
+	speakText("ગુગ્જી માં તમારુ હાર્દિક સ્વાગત છે, તમારા ટ્ર્ક માટે માલ ગોતવા હું તમારી શું મદદ કરી શકુ ?");
+}
+function cancle()
+{
+  
+status = "return";
+source = "";
+dest = [];
+dst = "";
+date = 0;
+month = 0;
+year = 0;
+hour ="";
+minute="00";
+ltime="";
+reading = 0;
+}
+function intpyesno()
+{
+	//alert(yesorno);
+	if(yesorno == 0)
+	{
+		intp();
+	}
+	else
+	{
+		yesno();
+	}
+}
+function yesno()
+{
+	for(let i=0; i< word.length; i++)
+	{
+		if(word[i] == "હા")
+		{
+			yes = 1;
+			break;
+		}
+		if(word[i] == "ના")
+		{
+			no = 1;
+			break;
+		}
+	}
+	if(no == 1)
+	{
+		document.getElementById('output').innerText = "ના";
+	word = ["ના"];
+		intp();
+		yesorno = 0;
+		yes = 0;
+		no = 0;
+	}
+	else if(yes == 1)
+	{
+		yesorno = 0;
+		yes = 0;
+		no = 0;
+		if(status == "live")
+		{
+		document.getElementById('ai').innerHTML = "તમને સ્થડ અને રસ્તો નકશાં માં બતાવવા માં આવ્યો છે, જો તે ખોટો હોય તો ઉપર નાં ખાના માં તમારુ સ્થડ શોધી બદલો.";
+		speakText(document.getElementById('ai').innerText);
+		selectlive();
+		displayhome();
+		document.getElementById("origininput").value = source;
+		document.getElementById("destinationinput").value = dst;
+		cal();
+		  cancle();
+		}
+	 if(status == "return")
+	  {
+		document.getElementById('ai').innerHTML = "તમને સ્થડ અને રસ્તો નકશાં માં બતાવવા માં આવ્યો છે સાચો હોય તો ખરા ની નીશાની દબાવો, ખોટો હોય તો ઉપર નાં ખાના માં તમારુ સ્થડ શોધી ખરા ની નીશાની દબાવો";
+		speakText(document.getElementById('ai').innerText);
+		opensubframe("returnadd.php");
+		} 
+	}
+	else
+	{
+	    speakText(document.getElementById('ai').innerText);
+	}
+}
+function intp()
+{
+let minute="00";
+let ltime="";
+let dest = [];
+let ignore = ["છે", "છું", "હું","મારે", "મને", "અમારું", "તમે", "તમારે", "તમને",
+ "તમારું", "ના", "રોજ", "રોજે", "ફેરો", "ફેરા" , "નાખવા", "નાખવાનો", "જાઉં",
+ "જઉં", "જવા", "જવું", "જવાનું", "જાવ", "જાવા", "જાવું", "જાવુ", "જાવાનું",
+ "કરવા", "કરવું", "કરવાનું", "કરવાનો", "સેટ", "કરો", "પહોચવાનું", "નીડવાનું", 
+"સવાર", "સવારે", "સવારના", "બપોર", "બપોરે", "બપોરના", "સાંજ", "સાંજે", "સાંજના",
+"રાત્રે", "રાતે", "રાતના", "સાડા","શાળા", "સાળા","હડા", "સવા", "પોણા", "વાગ્યે", "વાગે",
+ "કલાક", "કલાકે", "તારીખ", "તારીખે", "આજે", "આજ", "કાલ", "કાલે", "પરમ",
+ "દીવસે", "દીવસ", "દિવસ", "દિવસે", "દીવશ", "દીવશે", "દિવશ", "દિવશે", "હમણાં", "હમણાંનું",
+"જય", "રહ્યા", "છો", "તે", "બોલો", "હા",
+ "અત્યાર", "અત્યારે", "હવે", "હવેનો", "હવેનું", "લાઇવ", "લાઈવ", "માં", "મા", "નો", "વાગા",
+ "રિટર્ન", "રીટન", "રિટન", "સંભળાવો",
+"સંભડાવો", 
+"સોમ", "મંગળ", "બુધ", "ગુરુ", "શુક્ર", "શનિ", "રવિ", 
+"સોમવાર", "મંગળવાર", "બુધવાર", "ગુરુવાર", "શુક્રવાર", "શનિવાર", "રવિવાર", 
+"સોમવારે", "મંગળવારે", "બુધવારે", "ગુરુવારે", "શુક્રવારે", "શનિવારે", "રવિવારે", 
+ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];   
+let Num = [];
+let datestmp;
+let timestmp = -1;
+let j=0;
+let pona;
+let bopar = 0;
+let dp =0;
+let tp=0;
+let param =0;
+let pointer = 0;
+for(let i=0; i< word.length; i++)
+{
+if(word[i] == "સંભડાવો" || word[i] == "સંભળાવો")
+{
+	source = "";
+	dest = [];
+	dst = "";
+	date = 0;
+	month = 0;
+	year = 0;
+	hour ="";
+	minute="00";
+	ltime="";
+	reading = 1;
+	break;
+}
+if(word[i] == "રદ")
+{
+cancle();
+break;
+}
+if( status == "return" || status == "radar")
+{
+if (word[i] == "હમણાં" || word[i] == "હમણાંનું" || word[i] == "હમણાંનો" || word[i] == "હવે" || word[i] == "હવેનો" || word[i] == "હવેનું" || word[i] == "અત્યાર" || word[i] == "અત્યારે" || word[i] == "લાઇવ" || word[i] == "લાઈવ")
+{
+	status = "live";
+}
+}
+if( status == "live" || status == "radar")			
+{
+if (word[i] == "રિટર્ન" || word[i] == "રીટન")
+{
+	status = "return";
+}
+}
+if(word[i] == "રડાર")
+{
+	status="radar";
+}
+if(word[i].includes("રવિ"))
+{
+    nextdate = getNextWeekday(0);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("સોમ"))
+{
+    nextdate = getNextWeekday(1);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("મંગળ"))
+{
+    nextdate = getNextWeekday(2);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("બુધ"))
+{
+    nextdate = getNextWeekday(3);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("ગુરુ"))
+{
+    nextdate = getNextWeekday(4);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("શુક્ર"))
+{
+    nextdate = getNextWeekday(5);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else if(word[i].includes("શનિ"))
+{
+    nextdate = getNextWeekday(6);
+   	 date = nextdate.getDate();
+	    month = nextdate.getMonth()+1;
+    year = nextdate.getFullYear();
+}
+else
+{
+}
+if(!isNaN(word[i]) && isFinite(word[i]))
+{
+let n =  Number(word[i]);
+if(n >=1 && n <=31)
+{
+	word[i] = Number(word[i]);
+	Num[j] = i;
+	j = j+1;
+}
+}
+if(word[i]=="એક")
+{
+	word[i] = 1;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="બે")
+{
+	word[i] = 2;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="ત્રણ")
+{
+	word[i] = 3;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="ચાર")
+{
+	word[i] = 4;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="પાંચ")
+{
+	word[i] = 5;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="છ")
+{
+	word[i] = 6;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="સાત")
+{
+	word[i] = 7;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="આઠ")
+{
+	word[i] = 8;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="નવ")
+{
+	word[i] = 9;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="દસ")
+{
+	word[i] = 10;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="અગ્યાર")
+{
+	word[i] = 11;
+	Num[j] = i;
+	j = j+1;
+}
+else if(word[i]=="બાર")
+{
+	word[i] = 12;
+	Num[j] = i;
+	j = j+1;
+}
+else
+{
+
+}
+if(word[i] == "જાન્યુઆરી")
+{
+	month = 1;
+}
+else if(word[i] == "ફેબ્રુઆરી")
+{
+	month = 2;
+}
+else if(word[i] == "માર્ચ")
+{
+	month = 3;
+}
+else if(word[i] == "એપ્રિલ")
+{
+	month = 4;
+}
+else if(word[i] == "મે")
+{
+	month = 5;
+}
+else if(word[i] == "જૂન")
+{
+	month = 6;
+}
+else if(word[i] == "જુલાઈ")
+{
+	month = 7;
+}
+else if(word[i] == "ઓગસ્ટ")
+{
+	month = 8;
+}
+else if(word[i] == "સપ્ટેમ્બર")
+{
+	month = 9;
+}
+else if(word[i] == "ઓક્ટોબર")
+{
+	month = 10;
+}
+else if(word[i] == "નવેમ્બર")
+{
+	month = 11;
+}
+else if(word[i] == "ડિસેમ્બર")
+{
+	month = 12;
+}
+else
+{
+}
+if(word[i] == "તારીખ" || word[i] == "તારીખે")
+{
+	datestmp = i;
+}
+if(word[i] == "પરમ")
+{
+	param = 1;
+}
+if(word[i] == "આજે" || word[i] == "આજ")
+{
+ nextdate.setDate(now.getDate());
+	date = nextdate.getDate();
+	month = nextdate.getMonth()+1;
+	year = nextdate.getFullYear();
+}
+else if(word[i] == "કાલ" || word[i] == "કાલે")    
+{
+ nextdate.setDate(now.getDate() + 1);
+	date = nextdate.getDate();
+	month = nextdate.getMonth()+1;
+	year = nextdate.getFullYear();
+}
+else if(word[i] == "દીવસે" || word[i] == "દીવસ" || word[i] == "દિવસ" || word[i] == "દિવસે" || word[i] == "દીવશ" || word[i] == "દીવશે" || word[i] == "દિવશ" || word[i] == "દિવશે")
+{
+	if(param == 1)
+	{
+ nextdate.setDate(now.getDate() + 2);
+	date = nextdate.getDate();
+	month = nextdate.getMonth()+1;
+	year = nextdate.getFullYear();
+	}
+}
+else
+{
+}
+if(word[i] == "વાગ્યે" || word[i] =="વાગે" || word[i] == "કલાક" || word[i] =="કલાકે" || word[i] =="વાગા")
+{
+	hour = "";
+	tp=1;
+	let a = word[i-1].toString();
+	if(a.includes(":"))
+	{
+		//dest[dp-1] = "";
+		hour = word[i-1];
+	}
+	else
+	{
+		timestmp = i-1;
+	}
+}
+if(word[i] == "સાડા" || word[i] =="શાળા" || word[i] == "સાળા" || word[i] =="હડા")
+{
+	minute = "30";
+}
+else if(word[i] == "સવા")
+{
+	minute = "15";
+}
+else if(word[i] == "પોણા")
+{
+	minute = "45";
+	pona = 1;
+}
+else
+{
+}
+if(word[i] == "સવાર" || word[i] == "સવારે" || word[i] == "સવારના")
+{
+	ltime = "AM";
+}
+else if(word[i] == "સાંજ" || word[i] == "સાંજે" || word[i] == "સાંજના" || word[i] == "રાત્રે" || word[i] == "રાતે" || word[i] == "રાતના")
+{
+	ltime = "PM";
+}
+else if(word[i] == "બપોર" || word[i] == "બપોરે" || word[i] == "બપોરના")
+{
+	bopar = 1;
+}
+else
+{
+}
+if(((!ignore.includes(word[i].toString())) && (!/^\d+$/.test(word[i]))))
+{
+	let a = word[i].toString();
+	if(!a.includes(":"))
+	{
+		source = "";
+		dst = "";
+		dest[dp] = word[i];
+		dp= dp + 1;
+	}
+}
+}
+
+if(tp == 1)
+{
+if(timestmp!= -1)
+{
+	hour = word[timestmp];
+	j=j-1;
+	let a = 0;
+	for(let k=0; k < j; k++)
+	{
+		if(Num[k]!=timestmp)
+		{
+			Num[a]=Num[k];
+			a=a+1;
+		}
+	}
+	if(pona == 1)
+	{
+		hour = hour-pona;
+	}
+	if(bopar == 1)
+	{
+		if(hour >= 10 && hour < 12)
+		{
+			ltime = "AM";
+		}
+		else if (hour >= 1 && hour <= 4 || hour == 12)
+		{
+			ltime = "PM";
+		}
+	}
+}
+else
+{
+	if(hour!="")
+	{
+		let a = hour.split(":");
+		if(!isNaN(a[0]) && isFinite(a[0]))
+		{
+			let h = Number(a[0]);
+			if(pona == 1)
+			{
+				h=h-1;
+				hour = h;
+			}
+			if(bopar == 1)
+			{
+				if(h >= 10 && h < 12)
+				{
+					ltime = "AM";
+				}
+				else if (h >= 1 && h <= 4 || h == 12)
+				{
+					ltime = "PM";
+				}
+			}
+		}
+	}
+}
+}
+if(j ==1)
+{
+	date = 0;
+}
+if(j ==2)
+{
+	date = 0;
+	month = 0;
+}
+if(j ==3)
+{
+	date = 0;
+	month = 0;
+	year = 0;
+}
+   // alert(j);
+for(let k=0; k < j; k++)
+{
+		let a = Num[k];
+		if(k==0)
+		{
+			if(date == 0 && word[a] >= 1 && word[a]<=31)
+			{
+				date = word[a];
+			}
+		}
+		else if(k==1)
+		{
+			if(month == 0 && word[a] >= 1 && word[a]<=12)
+			{
+				month = word[a];
+			}
+		}
+		else if(k==2)
+		{
+			if(year == 0 && word[a] >= 25 && word[a]<=26)
+			{
+				year = word[a];
+			}
+		}
+		else{}
+}
+let sdp=0;
+if(dst =="")
+{
+for(let i=0; i < dest.length; i++)
+{
+	if(dest[i]!= "થી")
+	{
+		dst = dst +" "+ dest[i];
+	}
+	else
+	{
+		source = dst;
+		dst = "";
+		sdp=1;
+	}
+}
+}
+	document.getElementById('result').innerHTML = "<table><tr><td>status:<td>"+status+
+"<tr><td>reading :<td>"+reading+
+	"<tr><td>source :<td>"+source+
+	"<tr><td>destination :<td>"+dst+
+	"<tr><td>date :<td>"+date+
+	"<tr><td>month :<td>"+month+
+	"<tr><td>year :<td>"+year+
+	"<tr><td>hour :<td>"+hour+
+	"<tr><td>minute :<td>"+minute+
+	"<tr><td>ltime :<td>"+ltime+
+	"</table>";
+	if(status == "live")
+	{
+		document.getElementById('ai').innerText = "તમે અત્યારે";
+		if(source == "")
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+ " તમારા લોકેશન થી";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+source+" થી"; 
+		}
+		if(dst == "")
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" ક્યાં જય રહ્યા છો તે બોલો ?";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" "+dst+" જય રહ્યા છો ?,";
+			if(no == 1)
+			{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" આમાં ફેરફાર કરવા માટે બોલો અથવા રદ કરો બોલો ?";
+			}
+			else
+			{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" શું આ તમારે લાઇવ માં સેટ કરવુ છે, હા કે ના બોલો ?";
+			}
+			yesorno = 1;
+			
+		}
+	}
+	if(status == "return")
+	{
+		document.getElementById('ai').innerText = "તમે";
+		if(source == "")
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+ " ક્યાં થી ";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+source+" થી"; 
+		}
+		if(dst == "")
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" ક્યાં,";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" "+dst+",";
+		}
+		if(date == 0)
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" કઇ ";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" "+date;
+			if(month == 0)
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+"/"+(now.getMonth()+1);
+			}
+			else
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+"/"+month;
+			}
+			if(year == 0)
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+"/"+now.getFullYear();
+			}
+			else
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+"/"+year;
+			}
+		}
+		document.getElementById('ai').innerText = document.getElementById('ai').innerText+" તારીખે";
+		if(hour == "")
+		{
+			
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" "+hour;
+			if(minute == "00")
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+" વાગે";
+			}
+			else
+			{
+				document.getElementById('ai').innerText = document.getElementById('ai').innerText+"  વાગે "+minute+" મીનીટે";
+			}
+		}
+		if(source == "" || dst == "" || date == 0)
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" જય રહ્યા છો તે બોલો";
+		}
+		else
+		{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" જય રહ્યા છો";
+			if(no == 1)
+			{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" આમાં ફેરફાર કરવા માટે બોલો અથવા રદ કરો બોલો ?";
+			}
+			else
+			{
+			document.getElementById('ai').innerText = document.getElementById('ai').innerText+" શું આ તમારે રિટર્ન માં સેટ કરવુ છે, હા કે ના બોલો ?";
+			}
+			yesorno = 1;
+		}
+	}
+	if(reading == 1)
+	{
+		if(status == "live")
+		{
+			document.getElementById('ai').innerText = "હવે હું લાઇવ સંભડાવુ છું";
+		}
+		if(status == "return")
+		{
+			document.getElementById('ai').innerText = "હવે હું રિટર્ન સંભડાવુ છું";
+		}
+		if(status == "radar")
+		{
+			document.getElementById('ai').innerText = "હવે હું રડાર સંભડાવુ છું";
+		}
+	    reading = 0;
+	}
+	speakText(document.getElementById('ai').innerText);
+  startListening();
+}

@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>HOME</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+@media screen and (max-width: 700px) {
+.dropbtn {
+  background-color: white;
+  color: black;
+  padding: 0px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  width:100%;
+  height:100%;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+  background-color: white;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width:100%;
+  height:7%;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+ width:100%;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 5px 5px;
+  display: block;
+  font-size: 20px;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+
+.downmenu{background-color:lightblue;display: block;margin-left: auto;margin-right:auto;text-align:center;}
+.selecteddownmenu{background-color:white;display: block;margin-left: auto;margin-right:auto;text-align:center;}
+.search{height:100%;width:99%;display:none;position:relative;}
+.selectedsearch{height:100%;width:99%;display:block;position:relative;}
+}
+</style>
+<script>
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+function selectlive()
+{
+	document.getElementById("live").className="selecteddownmenu";
+	document.getElementById("radar").className="downmenu";
+	document.getElementById("return").className="downmenu";
+	showdiv();
+}
+function selectradar()
+{
+	document.getElementById("live").className="downmenu";
+	document.getElementById("radar").className="selecteddownmenu";
+	document.getElementById("return").className="downmenu";
+	showdiv();
+}
+function selectreturn()
+{
+	document.getElementById("live").className="downmenu";
+	document.getElementById("radar").className="downmenu";
+	document.getElementById("return").className="selecteddownmenu";
+	showdiv();
+}
+function showdiv()
+{
+	if(document.getElementById("live").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="selectedsearch";
+		document.getElementById("radardiv").className="search";
+		document.getElementById("returndiv").className="search";
+	}
+	if(document.getElementById("radar").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="search";
+		document.getElementById("radardiv").className="selectedsearch";
+		document.getElementById("returndiv").className="search";
+	}
+	if(document.getElementById("return").className=="selecteddownmenu")
+	{
+		document.getElementById("livediv").className="search";
+		document.getElementById("radardiv").className="search";
+		document.getElementById("returndiv").className="selectedsearch";
+	}
+}
+function selecttruck(name)
+{
+	//window.alert(name);
+	document.getElementById("selectedtruck").innerHTML=name;
+	var xhr = new XMLHttpRequest();
+                 xhr.open("GET", "selecttruck.php", true);
+                 xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById("searchlist").innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
+            showdiv();
+}
+</script>
+</head>
+<body style="height:99%;width:99%;position:fixed;">
+<div class="dropdown">
+  <button onclick="myFunction()" class="dropbtn" id="selectedtruck">Tata Super Ace(GJ03AZ4574)</button>
+  <div id="myDropdown" class="dropdown-content">
+    <a id="t1" name= "Tata Super Ace(GJ03AZ4574)" onClick="selecttruck(this.name)">Tata Super Ace(GJ03AZ4574)<br>Live : [10] Radar : [10] Return : [10]</a>
+    <a id="t2" name= "Bolero(GJ03AZ7713)" onClick="selecttruck(this.name)">Bolero(GJ03AZ7713)<br>Live : [10] Radar : [10] Return : [10]</a>
+    <a id="t3" name= "Tata 407(GJ03AZ1012)" onClick="selecttruck(this.name)">Tata 407(GJ03AZ1012)<br>Live : [10] Radar : [10] Return : [10]</a>
+  </div>
+</div>
+<div style="height:78%;width:100%;overflow: scroll;" id="searchlist">
+<div id="livediv" class="selectedsearch">
+Live
+<div style="color:white;position:fixed;bottom:16%;right:30px;height:50px;width:50px;border:0px solid green;border-radius:50%;line-height:50px;text-align:center;font-size:20px;background-color:green;">5</div>
+</div>
+<div id="radardiv" class="search">
+<div style="border-bottom: 2px solid lightgray;">
+<table style="width:100%;" border="0">
+<tr>
+<td colspan="4"></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td style="font-size:12px;width:70%;">MAHAVIR AGRO ENGINEERING AND FABRICATION</td>
+<td colspan="3" style="text-align:right;font-size:12px;width:30%;">11/04/2025</td>
+</tr>
+<tr>
+<td style="font-size:14px;">@</td>
+<td style="font-size:14px;font-weight:bold;width:70%;">Ribda,Rajkot, gujara</td>
+<td rowspan="3"><img src="Return img.jpeg" style="height:30px;width:30px;"></td>
+<td rowspan="3"><img src="Message img.png" style="height:30px;width:30px;"></td>
+<td rowspan="3"><img src="Call img.jpeg" style="height:30px;width:30px;"></td>
+</tr>
+<tr>
+<td style="text-align:center;font-size:14px;">|</td>
+<td style="font-size:12px;width:70%;">Bharat Agro Engineering Pvt. ltd.</td>
+</tr>
+<tr>
+<td style="font-size:14px;">@</td>
+<td style="font-size:14px;font-weight:bold;width:70%;">Shapar,Rajkot,Gujarat</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="4" style="text-align:right;font-size:12px;"><button style="float:left;text-align:center;width:20px;font-size:12px;background-color: white;color: black;padding: 0px;border:0.25px solid gray;border-radius:50%;color:gray;">I</button>Engineering Goods, 2000 KG</td>
+</tr>
+</table>
+</div>
+<div style="height:50px;"></div>
+<img src="search img.jpeg" style="position:fixed;bottom:16%;right:30px;height:50px;width:50px;">
+</div>
+<div id="returndiv" class="search">
+<div style="border-bottom: 2px solid lightgray;">
+<table style="width:100%;" border="0">
+<tr>
+<td></td>
+<td style="font-size:12px;width:70%;">MAHAVIR AGRO ENGINEERING AND FABRICATION</td>
+<td colspan="3" style="text-align:right;font-size:12px;width:30%;">11/04/2025</td>
+</tr>
+<tr>
+<td style="font-size:14px;">@</td>
+<td style="font-size:14px;font-weight:bold;width:70%;">Ribda,Rajkot, gujara</td>
+<td rowspan="3"><div style="color:white;bottom:16%;right:30px;height:30px;width:30px;border:0px solid green;border-radius:50%;line-height:30px;text-align:center;font-size:20px;background-color:green;">5</div></td>
+<td rowspan="3"><button style="text-align:center;height:30px;width:30px;font-size:12px;background-color:lightblue;color:white;padding: 0px;border:0.25px solid lightblue;border-radius:50%;font-weight:bold;">I</button></td>
+<td rowspan="3"><button style="text-align:center;height:30px;width:30px;font-size:12px;background-color:lightblue;color:white;padding: 0px;border:0.25px solid lightblue;border-radius:50%;font-weight:bold;">X</button></td>
+</tr>
+<tr>
+<td style="text-align:center;font-size:14px;">|</td>
+<td style="font-size:12px;width:70%;">Bharat Agro Engineering Pvt. ltd.</td>
+</tr>
+<tr>
+<td style="font-size:14px;">@</td>
+<td style="font-size:14px;font-weight:bold;width:70%;">Shapar,Rajkot,Gujarat</td>
+</tr>
+</table>
+</div>
+<img src="Plus img.jpeg" style="position:fixed;bottom:16%;right:30px;height:50px;width:50px;">
+</div>
+</div>
+<table style="width:100%;border:none;">
+<tr>
+<td  style="width:33%;height:14%;"><div id="live" class="selecteddownmenu" onClick="selectlive();"><img src="Live img.jpeg" style="height:60%;width:60%;display: block;margin-left: auto;margin-right:auto;" >Live</div></td>
+<td style="width:33%;height:14%;"><div id="radar" class="downmenu" onClick="selectradar();"><img src="Radar img.jpeg" style="height:60%;width:60%;display: block;margin-left: auto;margin-right:auto;">Radar</div></td>
+<td style="width:33%;height:14%;"><div id="return" class="downmenu" onClick="selectreturn();"><img src="Return img.jpeg" style="height:60%;width:60%;display: block;margin-left: auto;margin-right:auto;">Return</div></td>
+</tr>
+</table>
+<iframe style="position:absolute;top:0px;left:0px;height:0%;width:0%;background-color:white;"></iframe>
+</body>
+</html>

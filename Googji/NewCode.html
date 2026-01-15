@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RouteBox in Google Maps API</title>
+<style>
+#map {
+  height: 100%;
+}
+
+/* 
+ * Optional: Makes the sample page fill the window. 
+ */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.controls {
+  margin-top: 10px;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 32px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#origin-input,
+#destination-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 200px;
+}
+
+#origin-input:focus,
+#destination-input:focus {
+  border-color: #4d90fe;
+}
+
+#mode-selector {
+  color: #fff;
+  background-color: #4d90fe;
+  margin-left: 12px;
+  padding: 5px 11px 0px 11px;
+}
+
+#mode-selector label {
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 300;
+}
+</style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKPlYEWXMQmqJrABi8jtZ53akP5P_RlT0&callback=initMap&libraries=places&v=weekly"></script>
+   <script src="RouteBoxer.js"></script>
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let routeBoxer;
+function cal()
+{	
+	calculateRoute();
+}
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 22.2587, lng: 71.1924}, // Gujarat
+                zoom: 7
+            });
+            routeBoxer = new RouteBoxer();
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+            var alternativeRenders = [];
+            new AutocompleteDirectionsHandler(map);
+              calculateRoute();
+        }
+class AutocompleteDirectionsHandler {
+  map;
+  originPlaceId;
+  destinationPlaceId;
+  travelMode;
+  directionsService;
+  directionsRenderer;
+  constructor(map) {
+    this.map = map;
+    this.originPlaceId = "";
+    this.destinationPlaceId = "";
+    this.travelMode = google.maps.TravelMode.WALKING;
+    this.directionsService = new google.maps.DirectionsService();
+    this.directionsRenderer = new google.maps.DirectionsRenderer();
+    this.directionsRenderer.setMap(map);
+    this.routeBoxer = new RouteBoxer();
+    const originInput = document.getElementById("origin-input");
+    const destinationInput = document.getElementById("destination-input");
+    const modeSelector = document.getElementById("mode-selector");
+    // Specify just the place data fields that you need.
+    const originAutocomplete = new google.maps.places.Autocomplete(
+      originInput,
+      { fields: ["place_id"] },
+    );
+    // Specify just the place data fields that you need.
+    const destinationAutocomplete = new google.maps.places.Autocomplete(
+      destinationInput,
+      { fields: ["place_id"] },
+    );
+
+    this.setupClickListener(
+      "changemode-walking",
+      google.maps.TravelMode.WALKING,
+    );
+    this.setupClickListener(
+      "changemode-transit",
+      google.maps.TravelMode.TRANSIT,
+    );
+    this.setupClickListener(
+      "changemode-driving",
+      google.maps.TravelMode.DRIVING,
+    );
+    this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+    this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+      destinationInput,
+    );
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+  }
+  // Sets a listener on a radio button to change the filter type on Places
+  // Autocomplete.
+  setupClickListener(id, mode) {
+    const radioButton = document.getElementById(id);
+
+    radioButton.addEventListener("click", () => {
+      this.travelMode = mode;
+      this.route();
+    });
+  }
+  setupPlaceChangedListener(autocomplete, mode) {
+    autocomplete.bindTo("bounds", this.map);
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+
+      if (!place.place_id) {
+        window.alert("Please select an option from the dropdown list.");
+        return;
+      }
+
+      if (mode === "ORIG") {
+        this.originPlaceId = place.place_id;
+      } else {
+        this.destinationPlaceId = place.place_id;
+      }
+     // this.route();
+    });
+  }
+}
+        function calculateRoute() {
+            const request = {
+                origin: document.getElementById("origin-input").value,
+                destination:  document.getElementById("destination-input").value,
+                travelMode: google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives : true
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                    // Generate route boxes along the route
+	for(var i=0; i< result.routes.length; i++)
+	{
+                    const path = result.routes[i].overview_path;
+                    const distance = 3; // Distance (in km) for each box
+                    const boxes = routeBoxer.box(path, distance);
+                    // Draw each box on the map
+                   /* boxes.forEach(box => {
+                        new google.maps.Rectangle({
+                            bounds: box,
+                            fillColor: "#FF0000",
+                            fillOpacity: 0.1,
+                            strokeColor: "#FF0000",
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            map: map
+                        });
+                    });*/
+	drawBoxes(boxes);
+	logBoxCoordinates(boxes);
+	var altRenderer = new google.maps.DirectionsRenderer({
+                            map: map,
+                            directions: result,
+                            routeIndex: i,
+                        }, function(directions,routeIndex){
+		alternativeRenderers.push(altRenderer);
+	           });
+	}
+                }
+            });
+        }
+ function drawBoxes(boxes) {
+            for (let i = 0; i < boxes.length; i++) {
+                new google.maps.Rectangle({
+                    bounds: boxes[i],
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.1,
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    map: map
+                });
+            }
+        }
+ function logBoxCoordinates(boxes) {
+            boxes.forEach((box, index) => {
+                const sw = box.getSouthWest();
+                const ne = box.getNorthEast();
+
+                // Four corners of the box
+                const nw = { lat: ne.lat(), lng: sw.lng() };
+                const se = { lat: sw.lat(), lng: ne.lng() };
+	//window.alert(ne.lat()+" "+ne.lng()+" "+sw.lat()+" "+sw.lng());
+               /* console.log(Box ${index + 1}:);
+                console.log(SW: (${sw.lat()}, ${sw.lng()}));
+                console.log(SE: (${se.lat()}, ${se.lng()}));
+                console.log(NE: (${ne.lat()}, ${ne.lng()}));
+                console.log(NW: (${nw.lat()}, ${nw.lng()}));
+                console.log('---------------------');*/
+            });
+        }
+    </script>
+    <script src="https://unpkg.com/@googlemaps/route-boxer"></script>
+</head>
+<body onload="initMap()">
+<div style="display: none">
+      <input
+        id="origin-input"
+        class="controls"
+        type="text"
+        placeholder="Enter an origin location"
+      />
+
+      <input
+        id="destination-input"
+        class="controls"
+        type="text"
+        placeholder="Enter a destination location"
+        onblur ="cal();"
+      />
+
+      <div id="mode-selector" class="controls">
+        <input
+          type="radio"
+          name="type"
+          id="changemode-walking"
+          checked="checked"
+        />
+        <label for="changemode-walking">Walking</label>
+
+        <input type="radio" name="type" id="changemode-transit" />
+        <label for="changemode-transit">Transit</label>
+
+        <input type="radio" name="type" id="changemode-driving" />
+        <label for="changemode-driving">Driving</label>
+      </div>
+    </div>
+    <div id="map" style="width: 100%;"></div>
+</body>
+</html>
