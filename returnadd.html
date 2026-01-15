@@ -1,0 +1,21 @@
+<button id="back" onClick="displayhome();">back</button>Return ADD
+<div id="iodinput" style="width:100%;">
+      <input 
+        id="iorigininput"
+        class="controls"
+        type="text"
+        placeholder="Enter a Source location"
+        onclick="isetsd(this.id);"
+        onblur ="ichecksd(this.id);"
+      />
+      <input
+        id="idestinationinput"
+        class="controls"
+        type="text"
+        placeholder="Enter a Destination location"
+        onclick="isetsd(this.id);"
+        onblur ="ichecksd(this.id);"
+      />
+	<input type="button" value="OK" onclick="opensubframe('returnaddnext.php')" style="position:fixed;bottom:15%;left:10px;">
+</div>
+    <div id="imap" style="width: 100%;" ></div>
