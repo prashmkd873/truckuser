@@ -270,7 +270,7 @@ function selecttruck(name)
 	document.getElementById("selectedtruck").innerHTML=name;
 	document.getElementById("searchlist").innerHTML ="";
 	var xhr = new XMLHttpRequest();
-                 xhr.open("GET", "selecttruck.php", true);
+                 xhr.open("GET", "selecttruck.html", true);
                  xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     document.getElementById("searchlist").innerHTML = xhr.responseText;
@@ -286,7 +286,7 @@ function first(name)
 	document.getElementById("selectedtruck").innerHTML=name;
 	document.getElementById("searchlist").innerHTML ="";
 	var xhr = new XMLHttpRequest();
-                 xhr.open("GET", "selecttruck.php", true);
+                 xhr.open("GET", "selecttruck.html", true);
                  xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     document.getElementById("searchlist").innerHTML = xhr.responseText;
@@ -449,4 +449,5 @@ window.onclick = function(event) {
 <script src="inputmap.js"></script>
 <script src="radar.js"></script>
 </body>
+
 </html>
