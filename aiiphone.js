@@ -59,7 +59,7 @@ let now = new Date();
 let nextdate = new Date();
 function aiopen()
 {
-	speakText("Hellow, this work in iphone");
+	speakText("Gugjī māṁ tamāru hārdika svāgata chē, tamārā ṭrka māṭē māla gōtavā huṁ tamārī śuṁ madada karī śaku");
 }
 function cancle()
 {
@@ -750,3 +750,4 @@ for(let i=0; i < dest.length; i++)
   startListening();
 
 }
+
