@@ -15,7 +15,7 @@ function stringToArray(str) {
 }
     function startListening() {
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
+        recognition.lang = 'gu-IN';
         recognition.start();
 
         recognition.onresult = (event) => {
@@ -40,12 +40,10 @@ function stringToArray(str) {
         const text = ait;
         const speech = new SpeechSynthesisUtterance(text);
         speech.lang = 'gu-IN';
-        speech.onend = () => { 
-          startListening();
-          startListening(); 
-        };
+        speech.rate = 1;
+  	speech.pitch = 1; 
         window.speechSynthesis.speak(speech);
-    }
+	}
 let source = "";
 let dst = "";
 let date = 0;
@@ -61,7 +59,7 @@ let now = new Date();
 let nextdate = new Date();
 function aiopen()
 {
-	speakText("Hellow This work in iphone");
+	speakText("ગુગ્જી માં તમારુ હાર્દિક સ્વાગત છે, તમારા ટ્ર્ક માટે માલ ગોતવા હું તમારી શું મદદ કરી શકુ ?");
 }
 function cancle()
 {
@@ -750,5 +748,4 @@ for(let i=0; i < dest.length; i++)
 	}
 	speakText(document.getElementById('ai').innerText);
   startListening();
-
 }
