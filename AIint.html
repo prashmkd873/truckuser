@@ -45,9 +45,8 @@ function stringToArray(str) {
         const text = "કેમ છો?";
         const speech = new SpeechSynthesisUtterance(text);
          const gu = voices.find(v => v.lang === 'gu-IN');
-          if (!gu){
-    alert("Please install Gujarati voice in iPhone settings");
-    return;
+          if (gu){
+    alert(gu);
   }
         speech.voice = gu;
         speech.lang = 'gu-IN';
