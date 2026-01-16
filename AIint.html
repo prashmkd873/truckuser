@@ -42,7 +42,7 @@ function stringToArray(str) {
     
     // Text to Speech
     function speakText(ait) {
-        const text = ait;
+        const text = "કેમ છો?";
         const speech = new SpeechSynthesisUtterance(text);
         speech.lang = 'gu-IN';
         window.speechSynthesis.speak(speech);
