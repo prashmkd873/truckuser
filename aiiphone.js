@@ -17,7 +17,7 @@ function stringToArray(str) {
         const recognition = new window.webkitSpeechRecognition();
         recognition.lang = 'gu-IN';
 	recognition.continuous = false;
-	recognition.interimResult = false;
+	recognition.interimResults = false;
         recognition.onresult = (event) => {
             //document.getElementById('output').innerText = event.results[0][0].transcript;
 	word = stringToArray(event.results[0][0].transcript);
@@ -744,4 +744,5 @@ for(let i=0; i < dest.length; i++)
 	}
 	speakText(document.getElementById('ai').innerText);
   startListening();
+
 }
