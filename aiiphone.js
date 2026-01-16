@@ -59,7 +59,7 @@ let now = new Date();
 let nextdate = new Date();
 function aiopen()
 {
-	speakText("Gugjī māṁ tamāru hārdika svāgata chē, tamārā ṭrka māṭē māla gōtavā huṁ tamārī śuṁ madada karī śaku");
+	speakText("Gugjī ma tamaru hardika svagata che, tamara ṭruck maṭe mal gotava hum tamari sum madada karī saku");
 }
 function cancle()
 {
@@ -750,4 +750,5 @@ for(let i=0; i < dest.length; i++)
   startListening();
 
 }
+
 
