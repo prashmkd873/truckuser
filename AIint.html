@@ -44,6 +44,12 @@ function stringToArray(str) {
     function speakText(ait) {
         const text = "કેમ છો?";
         const speech = new SpeechSynthesisUtterance(text);
+         const gu = voices.find(v => v.lang === 'gu-IN');
+          if (!gu){
+    alert("Please install Gujarati voice in iPhone settings");
+    return;
+  }
+        speech.voice = gu;
         speech.lang = 'gu-IN';
         window.speechSynthesis.speak(speech);
     }
