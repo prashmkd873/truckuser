@@ -21,7 +21,7 @@ function stringToArray(str) {
     return str.split(' '); // Splits the string by spaces into an array
 }
     function startListening() {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const recognition = new window.webkitSpeechRecognition();
         recognition.lang = 'gu-IN';
         recognition.start();
 
