@@ -14,10 +14,10 @@ function stringToArray(str) {
     return str.split(' '); // Splits the string by spaces into an array
 }
     function startListening() {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const recognition = new window.webkitSpeechRecognition();
         recognition.lang = 'gu-IN';
-        recognition.start();
-
+	recognition.continuous = false;
+	recognition.interimResult = false;
         recognition.onresult = (event) => {
             //document.getElementById('output').innerText = event.results[0][0].transcript;
 	word = stringToArray(event.results[0][0].transcript);
@@ -28,18 +28,14 @@ function stringToArray(str) {
 	}
 	   intpyesno();
         };
-	
-        recognition.onerror = (event) => {
-           // alert('Error: ' + event.error);
-        };
-	
+	recognition.start();
     }
     
     // Text to Speech
     function speakText(ait) {
         const text = ait;
         const speech = new SpeechSynthesisUtterance(text);
-        speech.lang = 'en-US';
+        speech.lang = 'gu-IN';
         speech.rate = 1;
   	speech.pitch = 1; 
         window.speechSynthesis.speak(speech);
@@ -59,7 +55,7 @@ let now = new Date();
 let nextdate = new Date();
 function aiopen()
 {
-	speakText("Gugjī ma tamaru hardika svagata che, tamara ṭruck maṭe mal gotava hum tamari sum madada karī saku");
+	speakText("ગુગ્જી માં તમારુ હાર્દિક સ્વાગત છે, તમારા ટ્ર્ક માટે માલ ગોતવા હું તમારી શું મદદ કરી શકુ ?");
 }
 function cancle()
 {
@@ -748,7 +744,4 @@ for(let i=0; i < dest.length; i++)
 	}
 	speakText(document.getElementById('ai').innerText);
   startListening();
-
 }
-
-
