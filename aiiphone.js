@@ -15,7 +15,7 @@ function stringToArray(str) {
 }
     function startListening() {
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'gu-IN';
+        recognition.lang = 'en-US';
         recognition.start();
 
         recognition.onresult = (event) => {
@@ -61,7 +61,7 @@ let now = new Date();
 let nextdate = new Date();
 function aiopen()
 {
-	speakText("ગુગ્જી માં તમારુ હાર્દિક સ્વાગત છે, તમારા ટ્ર્ક માટે માલ ગોતવા હું તમારી શું મદદ કરી શકુ ?");
+	speakText("Hellow This work in iphone");
 }
 function cancle()
 {
@@ -750,4 +750,5 @@ for(let i=0; i < dest.length; i++)
 	}
 	speakText(document.getElementById('ai').innerText);
   startListening();
+
 }
