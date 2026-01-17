@@ -49,7 +49,7 @@ function stringToArray(str) {
         const text = "કેમ છો?";
         const speech = new SpeechSynthesisUtterance(text);
          const gu = voices.find(v => v.lang === 'gu-IN');
-        alert(voices);
+        alert(voices.lang);
   
         speech.voice = gu;
         speech.lang = 'gu-IN';
