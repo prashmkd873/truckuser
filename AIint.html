@@ -41,20 +41,35 @@ function stringToArray(str) {
     }
     
     // Text to Speech
-    function speakText(ait) {
-        let voices = [];
+    function speakText() {
+  const text = "કેમ છો?";
+  const speech = new SpeechSynthesisUtterance(text);
 
-  voices = speechSynthesis.getVoices();
+  function loadVoices() {
+    const voices = window.speechSynthesis.getVoices();
 
-        const text = "કેમ છો?";
-        const speech = new SpeechSynthesisUtterance(text);
-         const gu = voices.find(v => v.lang === 'gu-IN');
-        alert(voices.lang);
-  
-        speech.voice = gu;
-        speech.lang = 'gu-IN';
-        window.speechSynthesis.speak(speech);
+    // Debug: see available voices
+    console.log(voices.map(v => v.lang + " - " + v.name));
+
+    // Try Gujarati voice
+    const guVoice = voices.find(v => v.lang === "gu-IN");
+
+    if (guVoice) {
+      speech.voice = guVoice;
+      speech.lang = "gu-IN";
+    } else {
+      alert("Gujarati voice not available on this device");
     }
+
+    window.speechSynthesis.speak(speech);
+  }
+
+  if (speechSynthesis.getVoices().length === 0) {
+    speechSynthesis.addEventListener("voiceschanged", loadVoices);
+  } else {
+    loadVoices();
+  }
+}
 let source = "";
 let dst = "";
 let date = 0;
