@@ -42,12 +42,17 @@ function stringToArray(str) {
     
     // Text to Speech
     function speakText(ait) {
+        let voices = [];
+
+speechSynthesis.onvoiceschanged = () => {
+  voices = speechSynthesis.getVoices();
+};
         const text = "કેમ છો?";
         const speech = new SpeechSynthesisUtterance(text);
-         //const gu = voices.find(v => v.lang === 'gu-IN');
-        alert(voices.lang);
+         const gu = voices.find(v => v.lang === 'gu-IN');
+        alert(gu);
   
-        //speech.voice = gu;
+        speech.voice = gu;
         speech.lang = 'gu-IN';
         window.speechSynthesis.speak(speech);
     }
